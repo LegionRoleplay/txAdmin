@@ -204,11 +204,9 @@ export default class Scheduler {
 
         //Checking if server restart or warning time
         if (nextDistMins === 0) {
-            //restart server
-            this.restartFXServer(
-                `scheduled restart at ${nextRestart.string}`,
-                globals.translator.t('restarter.schedule_reason', { time: nextRestart.string }),
-            );
+            // Abychom resetovali docker (a tím updatnuli server) potřebujeme aby ten server byl vyplý a všecko se savnulo
+            // Takže upravujeme restart aby nerestartoval server ale natvrdo ho vypnul
+            globals.fxRunner.killServer(globals.translator.t('restarter.schedule_reason', { time: nextRestart.string }), null, true);
 
             //reset next scheduled
             this.nextTempSchedule = false;
