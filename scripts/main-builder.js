@@ -26,7 +26,11 @@ const getPublishVersion = (isOptional) => {
                     preReleaseExpiration: '0',
                 };
             } else {
-                throw new Error('No --tag found.');
+                return {
+                    txVersion: 'erze pro LegionRP',
+                    isPreRelease: false,
+                    preReleaseExpiration: '0',
+                };
             }
         }
         const refRemoved = workflowRef.replace(/^(refs\/tags\/)?v/, '');
