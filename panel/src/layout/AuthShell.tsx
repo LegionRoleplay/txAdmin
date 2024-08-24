@@ -28,23 +28,6 @@ export default function AuthShell() {
                 </Card>
 
                 <div className="mx-auto flex flex-wrap gap-4 justify-center mb-2">
-                    {window.txConsts.adsData.login ? (
-                        <a
-                            href={window.txConsts.adsData.login.url}
-                            onClick={handleExternalLinkClick}
-                            target='_blank'
-                            className='w-48 h-16 relative group shadow-sm opacity-90 hover:opacity-100
-                            dark:brightness-90 dark:hover:brightness-110'
-                        >
-                            <div className='absolute inset-0 -z-10 animate-pulse blur 
-                            scale-0 group-hover:scale-100 transition-transform bg-black
-                            dark:bg-gradient-to-r dark:from-[#18E889] dark:to-[#01FFFF]' />
-                            <img
-                                className='rounded-lg max-w-48 max-h-16 m-auto'
-                                src={window.txConsts.adsData.login.img}
-                            />
-                        </a>
-                    ) : null}
                     <a
                         href='https://discord.gg/uAmsGa2'
                         onClick={handleExternalLinkClick}

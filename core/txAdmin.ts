@@ -10,7 +10,6 @@ import setupProfile from '@core/extras/setupProfile';
 import AdminVault from '@core/components/AdminVault';
 import ConfigVault from '@core/components/ConfigVault';
 import DiscordBot from '@core/components/DiscordBot';
-import DynamicAds from '@core/components/DynamicAds';
 import FxRunner from '@core/components/FxRunner';
 import Logger from '@core/components/Logger';
 import HealthMonitor from '@core/components/HealthMonitor';
@@ -42,7 +41,6 @@ const globalsInternal: Record<string, any> = {
     discordBot: null,
     fxRunner: null,
     logger: null,
-    dynamicAds: null,
     healthMonitor: null,
     scheduler: null,
     statsManager: null,
@@ -74,7 +72,6 @@ export default class TxAdmin {
     logger;
     translator;
     fxRunner;
-    dynamicAds;
     healthMonitor;
     scheduler;
     statsManager;
@@ -164,9 +161,6 @@ export default class TxAdmin {
 
             this.fxRunner = new FxRunner(this, profileConfig.fxRunner);
             globalsInternal.fxRunner = this.fxRunner;
-
-            this.dynamicAds = new DynamicAds();
-            globalsInternal.dynamicAds = this.dynamicAds;
 
             this.healthMonitor = new HealthMonitor(profileConfig.monitor);
             globalsInternal.healthMonitor = this.healthMonitor;

@@ -735,7 +735,6 @@ Global:
 - DiscordBot
 - Logger
 - Translator
-- DynamicAds
 - UpdateChecker > CfxUpdateChecker
 
 Instance[]:

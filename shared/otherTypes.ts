@@ -20,11 +20,6 @@ export type ThemeType = {
     style: { [key: string]: string };
 };
 
-export type AdsDataType = {
-    login: false | { img: string, url: string };
-    main: false | { img: string, url: string };
-}
-
 export type InjectedTxConsts = {
     //Env
     fxsVersion: string;
@@ -40,7 +35,6 @@ export type InjectedTxConsts = {
     hasMasterAccount: boolean;
     defaultTheme: string;
     customThemes: Omit<ThemeType, 'style'>[];
-    adsData: AdsDataType;
 
     //Auth
     preAuth: ReactAuthDataType | false;

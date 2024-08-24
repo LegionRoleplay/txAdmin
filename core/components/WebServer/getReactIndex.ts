@@ -1,7 +1,7 @@
 const modulename = 'WebCtxUtils';
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { AdsDataType, InjectedTxConsts, ThemeType } from '@shared/otherTypes';
+import { InjectedTxConsts, ThemeType } from '@shared/otherTypes';
 import { txEnv, convars } from "@core/globalData";
 import { AuthedCtx, CtxWithVars } from "./ctxTypes";
 import consts from "@shared/consts";
@@ -125,7 +125,6 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
         hasMasterAccount: ctx.txAdmin.adminVault.hasAdmins(true),
         defaultTheme: tmpDefaultTheme,
         customThemes: tmpCustomThemes.map(({ name, isDark }) => ({ name, isDark })),
-        adsData: ctx.txAdmin.dynamicAds.adData as AdsDataType,
 
         //auth
         preAuth: authedAdmin && authedAdmin.getAuthData(),
@@ -156,12 +155,12 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
 
     //Setting the theme class from the cookie
     const themeCookie = ctx.cookies.get('txAdmin-theme');
-    if(themeCookie){
-        if(tmpDefaultThemes.includes(themeCookie)){
+    if (themeCookie) {
+        if (tmpDefaultThemes.includes(themeCookie)) {
             replacers.htmlClasses = themeCookie;
         } else {
             const selectedCustomTheme = tmpCustomThemes.find((theme) => theme.name === themeCookie);
-            if(!selectedCustomTheme){
+            if (!selectedCustomTheme) {
                 replacers.htmlClasses = tmpDefaultTheme;
             } else {
                 const lightDarkSelector = selectedCustomTheme.isDark ? 'dark' : 'light';
@@ -181,7 +180,7 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
 
     //If in prod mode and NUI, replace the entry point with the local one
     //This is required because of how badly the WebPipe handles "large" files
-    if (!convars.isDevMode){
+    if (!convars.isDevMode) {
         const base = ctx.txVars.isWebInterface ? `./` : `nui://monitor/panel/`;
         htmlOut = htmlOut.replace(/src="\.\/index-(\w+)\.js"/, `src="${base}index-$1.js"`);
         htmlOut = htmlOut.replace(/href="\.\/index-(\w+)\.css"/, `href="${base}index-$1.css"`);
