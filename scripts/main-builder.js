@@ -27,7 +27,7 @@ const getPublishVersion = (isOptional) => {
                 };
             } else {
                 return {
-                    txVersion: 'erze pro LegionRP',
+                    txVersion: '9.9.9',
                     isPreRelease: false,
                     preReleaseExpiration: '0',
                 };
