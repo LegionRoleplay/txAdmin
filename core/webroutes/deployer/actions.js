@@ -10,7 +10,7 @@ import consoleFactory from '@extras/console';
 const console = consoleFactory(modulename);
 
 //Helper functions
-const isUndefined = (x) => { return (typeof x === 'undefined'); };
+const isUndefined = (x) => (x === undefined);
 
 
 /**
@@ -93,6 +93,17 @@ async function handleSetVariables(ctx) {
         && !consts.regexSvLicenseOld.test(userVars.svLicense)
     ) {
         return ctx.send({ type: 'danger', message: 'The Server License does not appear to be valid.' });
+    }
+
+    //Validating steam api key requirement
+    if (
+        globals.deployer.recipe.steamRequired
+        && (typeof userVars.steam_webApiKey !== 'string' || userVars.steam_webApiKey.length < 24)
+    ) {
+        return ctx.send({
+            type: 'danger',
+            message: 'This recipe requires steam_webApiKey to be set and valid.',
+        });
     }
 
     //DB Stuff
@@ -237,12 +248,12 @@ async function handleSaveConfig(ctx) {
     ctx.admin.logAction('Completed and committed server deploy.');
 
     //Starting server
-    const spawnMsg = await globals.fxRunner.spawnServer(false);
-    if (spawnMsg !== null) {
+    const spawnError = await globals.fxRunner.spawnServer(false);
+    if (spawnError !== null) {
         return ctx.send({
             type: 'danger',
             markdown: true,
-            message: `Config file saved, but faied to start server with error:\n${spawnMsg}`,
+            message: `Config file saved, but faied to start server with error:\n${spawnError}`,
         });
     } else {
         globals.deployer = null;

@@ -7,7 +7,7 @@ const console = consoleFactory(modulename);
 
 
 //Helper functions
-const isUndefined = (x) => { return (typeof x === 'undefined'); };
+const isUndefined = (x) => (x === undefined);
 const toDefault = (input, defVal) => { return (isUndefined(input)) ? defVal : input; };
 const removeNulls = (obj) => {
     const isArray = obj instanceof Array;
@@ -122,6 +122,8 @@ export default class ConfigVault {
                 hideDefaultDirectMessage: toDefault(cfg.global.hideDefaultDirectMessage, false),
                 hideDefaultWarning: toDefault(cfg.global.hideDefaultWarning, false),
                 hideDefaultScheduledRestartWarning: toDefault(cfg.global.hideDefaultScheduledRestartWarning, false),
+                hideAdminInPunishments: toDefault(cfg.global.hideAdminInPunishments, true),
+                hideAdminInMessages: toDefault(cfg.global.hideAdminInMessages, false),
             };
             out.logger = toDefault(cfg.logger, {}); //not in template
             out.monitor = {
@@ -161,7 +163,7 @@ export default class ConfigVault {
                 cfgPath: toDefault(cfg.fxRunner.cfgPath, null),
                 commandLine: toDefault(cfg.fxRunner.commandLine, null),
                 logPath: toDefault(cfg.fxRunner.logPath, null), //not in template
-                onesync: toDefault(cfg.fxRunner.onesync, 'legacy'),
+                onesync: toDefault(cfg.fxRunner.onesync, 'on'),
                 autostart: toDefault(cfg.fxRunner.autostart, null),
                 restartDelay: toDefault(cfg.fxRunner.restartDelay, null), //not in template
                 shutdownNoticeDelay: toDefault(cfg.fxRunner.shutdownNoticeDelay, null), //not in template
@@ -214,12 +216,13 @@ export default class ConfigVault {
             cfg.global.hideDefaultDirectMessage = (cfg.global.hideDefaultDirectMessage === 'true' || cfg.global.hideDefaultDirectMessage === true);
             cfg.global.hideDefaultWarning = (cfg.global.hideDefaultWarning === 'true' || cfg.global.hideDefaultWarning === true);
             cfg.global.hideDefaultScheduledRestartWarning = (cfg.global.hideDefaultScheduledRestartWarning === 'true' || cfg.global.hideDefaultScheduledRestartWarning === true);
+            cfg.global.hideAdminInPunishments = (cfg.global.hideAdminInPunishments === 'true' || cfg.global.hideAdminInPunishments === true);
+            cfg.global.hideAdminInMessages = (cfg.global.hideAdminInMessages === 'true' || cfg.global.hideAdminInMessages === true);
 
             //Logger - NOTE: this one default's i'm doing directly into the class
             cfg.logger.fxserver = toDefault(cfg.logger.fxserver, {});
             cfg.logger.server = toDefault(cfg.logger.server, {});
             cfg.logger.admin = toDefault(cfg.logger.admin, {});
-            cfg.logger.console = toDefault(cfg.logger.console, {});
 
             //Monitor
             cfg.monitor.restarterSchedule = cfg.monitor.restarterSchedule || [];
@@ -248,7 +251,7 @@ export default class ConfigVault {
 
             //FXRunner
             cfg.fxRunner.logPath = cfg.fxRunner.logPath || `${this.serverProfilePath}/logs/fxserver.log`; //not in template
-            cfg.fxRunner.onesync = cfg.fxRunner.onesync || 'legacy';
+            cfg.fxRunner.onesync = cfg.fxRunner.onesync || 'on';
             cfg.fxRunner.autostart = (cfg.fxRunner.autostart === 'true' || cfg.fxRunner.autostart === true);
             cfg.fxRunner.restartDelay = parseInt(cfg.fxRunner.restartDelay) || 750; //not in template
             cfg.fxRunner.shutdownNoticeDelay = parseInt(cfg.fxRunner.shutdownNoticeDelay) || 5; //not in template

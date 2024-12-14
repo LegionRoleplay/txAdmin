@@ -75,7 +75,7 @@ export default function ServerMenu() {
     return <div className='relative'>
         {serverConfigPendingStep && <PendingServerConfigure pendingStep={serverConfigPendingStep} />}
         <div className={cn(serverConfigPendingStep && 'opacity-0 pointer-events-none')}>
-            <h2 className="mb-1.5 text-lg font-semibold tracking-tight overflow-hidden text-ellipsis">
+            <h2 className="mb-1.5 text-lg font-semibold tracking-tight line-clamp-1">
                 <ServerName />
             </h2>
             <div className="space-y-1 select-none">
@@ -88,7 +88,7 @@ export default function ServerMenu() {
                 <MenuNavLink href="/server/resources">
                     <BoxIcon className="mr-2 h-4 w-4" />Resources
                 </MenuNavLink>
-                <MenuNavLink href="/server/server-log">
+                <MenuNavLink href="/server/server-log" disabled={!hasPerm('server.log.view')}>
                     <EyeIcon className="mr-2 h-4 w-4" />Server Log
                 </MenuNavLink>
                 <MenuNavLink href="/server/cfg-editor" disabled={!hasPerm('server.cfg.editor')}>

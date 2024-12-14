@@ -1,6 +1,6 @@
 const modulename = 'Deployer';
 import path from 'node:path';
-import { cloneDeep }  from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import dateFormat from 'dateformat';
 import fse from 'fs-extra';
 import open from 'open';
@@ -14,7 +14,7 @@ const console = consoleFactory(modulename);
 
 //Helper functions
 const getTimestamp = () => { return dateFormat(new Date(), 'HH:MM:ss'); };
-const isUndefined = (x) => { return (typeof x === 'undefined'); };
+const isUndefined = (x) => (x === undefined);
 const toDefault = (input, defVal) => { return (isUndefined(input)) ? defVal : input; };
 const canCreateFile = async (targetPath) => {
     try {
@@ -108,11 +108,14 @@ export const parseValidateRecipe = (rawRecipe) => {
     }
     if (typeof recipe['$minFxVersion'] == 'number') {
         if (recipe['$minFxVersion'] > txEnv.fxServerVersion) throw new Error(`this recipe requires FXServer v${recipe['$minFxVersion']} or above`);
-        outRecipe.fxserverMinVersion = recipe['$minFxVersion']; //useless for now
+        outRecipe.fxserverMinVersion = recipe['$minFxVersion']; //NOTE: currently no downstream use
     }
     if (typeof recipe['$engine'] == 'number') {
         if (recipe['$engine'] < engineVersion) throw new Error(`unsupported '$engine' version ${recipe['$engine']}`);
-        outRecipe.recipeEngineVersion = recipe['$engine']; //useless for now
+        outRecipe.recipeEngineVersion = recipe['$engine']; //NOTE: currently no downstream use
+    }
+    if (recipe['$steamRequired'] === true) {
+        outRecipe.steamRequired = true;
     }
 
     //Validate tasks

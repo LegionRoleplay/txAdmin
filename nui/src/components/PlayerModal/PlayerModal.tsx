@@ -76,14 +76,13 @@ const StyledCloseButton = styled(IconButton)(({ theme }) => ({
   right: theme.spacing(2),
 }));
 
-const PlayerModal: React.FC = () => {
+type PlayerModalProps = {
+  onClose: () => void
+};
+const PlayerModal: React.FC<PlayerModalProps> = ({onClose}) => {
   const setModalOpen = useSetPlayerModalVisibility();
   const playerDetails = usePlayerDetailsValue();
   const assocPlayer = useAssociatedPlayerValue();
-
-  const handleClose = () => {
-    setModalOpen(false);
-  };
 
   if (!assocPlayer) return null;
 
@@ -93,8 +92,8 @@ const PlayerModal: React.FC = () => {
     <>
       <DialogTitle style={{ borderBottom: "1px solid rgba(221,221,221,0.54)" }}>
         [{assocPlayer.id}]{" "}
-        {playerDetails?.player?.displayName ?? assocPlayer.name}
-        <StyledCloseButton onClick={handleClose} size="large">
+        {playerDetails?.player?.displayName ?? assocPlayer.displayName}
+        <StyledCloseButton onClick={onClose} size="large">
           <Close />
         </StyledCloseButton>
       </DialogTitle>

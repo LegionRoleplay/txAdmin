@@ -11,6 +11,10 @@ import consoleFactory from '@extras/console';
 import chalk from 'chalk';
 const console = consoleFactory(modulename);
 
+//FIXME: The way I'm doing bersioning right now is horrible
+// but for now it's the best I can do
+const ADMIN_SCHEMA_VERSION = 1;
+
 
 //Helpers
 const migrateProviderIdentifiers = (providerName, providerData) => {
@@ -43,15 +47,17 @@ export default class AdminVault {
             'settings.write': 'Settings: Change',
             'console.view': 'Console: View',
             'console.write': 'Console: Write',
-            'control.server': 'Start/Stop Server + Scheduler',
+            'control.server': 'Start/Stop Server + Scheduler', //FIXME: horrible name
+            'announcement': 'Send Announcements',
             'commands.resources': 'Start/Stop Resources',
-            'server.cfg.editor': 'Read/Write server.cfg',
+            'server.cfg.editor': 'Read/Write server.cfg', //FIXME: rename to server.cfg_editor
             'txadmin.log.view': 'View System Logs', //FIXME: rename to system.log.view
+            'server.log.view': 'View Server Logs',
 
             'menu.vehicle': 'Spawn / Fix Vehicles',
             'menu.clear_area': 'Reset world area',
             'menu.viewids': 'View Player IDs in-game', //be able to see the ID of the players
-            'players.message': 'Announcement / DM', //enable/disable the dm button on modal as well
+            'players.direct_message': 'Direct Message',
             'players.whitelist': 'Whitelist',
             'players.warn': 'Warn',
             'players.kick': 'Kick',
@@ -150,6 +156,7 @@ export default class AdminVault {
             };
         }
         const newAdmin = {
+            $schema: ADMIN_SCHEMA_VERSION,
             name: username,
             master: true,
             password_hash: (isPlainText) ? GetPasswordHash(password) : password,
@@ -304,7 +311,6 @@ export default class AdminVault {
             }
         } catch (error) {
             console.error(`Cannot check admins file integrity: ${error.message}`);
-            restore();
         }
     }
 
@@ -326,12 +332,13 @@ export default class AdminVault {
 
         //Preparing admin
         const admin = {
-            name: name,
+            $schema: ADMIN_SCHEMA_VERSION,
+            name,
             master: false,
             password_hash: GetPasswordHash(password),
             password_temporary: true,
             providers: {},
-            permissions: permissions,
+            permissions,
         };
 
         //Check if provider uid already taken and inserting into admin object
@@ -465,7 +472,7 @@ export default class AdminVault {
     async loadAdminsFile() {
         let raw = null;
         let jsonData = null;
-        let migrated = false;
+        let hasMigration = false;
 
         const callError = (reason) => {
             console.error(`Unable to load admins.json: ${reason}`);
@@ -517,7 +524,7 @@ export default class AdminVault {
                     if (x.providers[y].identifier.length < 3) return true;
                 } else {
                     migrateProviderIdentifiers(y, x.providers[y]);
-                    migrated = true;
+                    hasMigration = true;
                 }
             });
             if (providersTest) return true;
@@ -528,15 +535,38 @@ export default class AdminVault {
             return callError('invalid data in the admins file');
         }
 
-        const masters = jsonData.filter((x) => { return x.master; });
+        const masters = jsonData.filter((x) => x.master);
         if (masters.length !== 1) {
             return callError('must have exactly 1 master account');
         }
 
+        //Migrate admin stuff
+        jsonData.forEach((admin) => {
+            //Migration (tx v7.3.0)
+            if (admin.$schema === undefined) {
+                //adding schema version
+                admin.$schema = ADMIN_SCHEMA_VERSION;
+                hasMigration = true;
+                
+                //separate DM and Announcement permissions
+                if (admin.permissions.includes('players.message')) {
+                    hasMigration = true;
+                    admin.permissions = admin.permissions.filter((perm) => perm !== 'players.message');
+                    admin.permissions.push('players.direct_message');
+                    admin.permissions.push('announcement');
+                }
+
+                //Adding the new permission, except if they have no permissions or all of them
+                if (admin.permissions.length && !admin.permissions.includes('all_permissions')) {
+                    admin.permissions.push('server.log.view');
+                }
+            }
+        });
+
         this.admins = jsonData;
         //NOTE: since this runs only at the start, nobody is online yet
         // this.refreshOnlineAdmins().catch((e) => { });
-        if (migrated) {
+        if (hasMigration) {
             try {
                 await this.writeAdminsFile();
                 console.ok('The admins.json file was migrated to a new version.');
@@ -599,6 +629,24 @@ export default class AdminVault {
                 console.warn('Use this PIN to add a new master account: ' + chalk.inverse(` ${this.addMasterPin} `));
             }
             return false;
+        }
+    }
+
+
+    /**
+     * Returns the public name to display for that particular purpose
+     * TODO: maybe use enums for the purpose
+     */
+    getAdminPublicName(name, purpose) {
+        if (!name || !purpose) throw new Error('Invalid parameters');
+        const replacer = globals.txAdmin.globalConfig.serverName ?? 'txAdmin';
+
+        if (purpose === 'punishment') {
+            return globals.txAdmin.globalConfig.hideAdminInPunishments ? replacer : name;
+        } else if (purpose === 'message') {
+            return globals.txAdmin.globalConfig.hideAdminInMessages ? replacer : name;
+        } else {
+            throw new Error(`Invalid purpose: ${purpose}`);
         }
     }
 };

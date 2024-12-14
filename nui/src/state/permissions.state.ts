@@ -3,6 +3,7 @@ import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 // TODO: Make an enum
 export type ResolvablePermission =
   | "all_permissions"
+  | "announcement"
   | "manage.admins"
   | "commands.resources"
   | "players.playermode"
@@ -11,7 +12,7 @@ export type ResolvablePermission =
   | "players.trollmenu"
   | "players.ban"
   | "players.kick"
-  | "players.message"
+  | "players.direct_message"
   | "players.warn"
   | "players.whitelist"
   | "console.view"
@@ -21,6 +22,7 @@ export type ResolvablePermission =
   | "settings.view"
   | "settings.write"
   | "txadmin.log.view"
+  | "server.log.view"
   | "menu.vehicle"
   | "menu.clear_area"
   | "players.spectate"

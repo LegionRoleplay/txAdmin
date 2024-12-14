@@ -98,6 +98,8 @@ export default class TxAdmin {
         hideDefaultDirectMessage: boolean,
         hideDefaultWarning: boolean,
         hideDefaultScheduledRestartWarning: boolean,
+        hideAdminInPunishments: boolean,
+        hideAdminInMessages: boolean,
     }
 
 
@@ -146,6 +148,9 @@ export default class TxAdmin {
         //  - adminVault before webserver
         //  - logger before fxrunner
         //FIXME: After the migration, delete the globalsInternal.
+
+        //FIXME: group the modules into two groups, one is the "core stuff" (server running, web open, banner, database, etc)
+        //FIXME: and the other group can start on the next tick
         try {
             this.adminVault = new AdminVault();
             globalsInternal.adminVault = this.adminVault;
@@ -153,7 +158,7 @@ export default class TxAdmin {
             this.discordBot = new DiscordBot(this, profileConfig.discordBot);
             globalsInternal.discordBot = this.discordBot;
 
-            this.logger = new Logger(profileConfig.logger);
+            this.logger = new Logger(this, profileConfig.logger);
             globalsInternal.logger = this.logger;
 
             this.translator = new Translator(this);
